@@ -1,8 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { Icon } from "@/components/icons";
+import { MotionRoot, NumberTicker } from "@/components/motion";
+
+const d = (ms: number) => ({ "--d": `${ms}ms` }) as React.CSSProperties;
 import { Sidebar, Topbar, Shell, type NavGroup } from "@/components/chrome";
-import { Button, Badge, Card, CardHead, CardBody, StatCard, Dropdown, MenuItem, SearchInput, Modal, ModalHead, ModalFoot, Field, Input, Select, TableWrap, Tbl, Tr, Seg, Avatar, Legend, StackedBars, useToast } from "@/components/ui";
+import { Button, Badge, Card, CardHead, CardBody, StatCard, Dropdown, MenuItem, Modal, ModalHead, ModalFoot, Field, Input, Select, TableWrap, Tbl, Tr, Seg, Avatar, Legend, StackedBars, useToast } from "@/components/ui";
 
 const NAV: NavGroup[] = [
   { label: "Observe", items: [
@@ -41,10 +44,10 @@ export default function Dashboard() {
         { label: "Back to library", icon: "arrow-left-01", href: "/", group: "Go to" },
       ]} />}
     >
-      <div id="monitors" className="mb-[20px] flex flex-wrap items-end gap-[14px] pt-[26px]">
+      <div id="monitors" data-reveal className="mb-[20px] flex flex-wrap items-end gap-[14px] pt-[26px]">
         <div>
           <h1 className="text-[24px] font-semibold tracking-[-0.01em]">Monitors</h1>
-          <p className="mt-[4px] text-[13.5px] text-ink2">24 checks across 3 regions, every 30 seconds.</p>
+          <p className="mt-[4px] text-[13.5px] text-ink2"><NumberTicker value={24} /> checks across 3 regions, every 30 seconds.</p>
         </div>
         <span className="flex-1" />
         <Dropdown label="Last 24 hours" icon="clock-01" right>
@@ -55,13 +58,13 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-[14px] sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard icon="activity-01" iconBg="var(--color-greenbg)" label="Uptime, 30 days" value="99.98%" delta="↗ +0.01" deltaUp sub="11 min downtime total" />
-        <StatCard icon="zap" iconBg="var(--color-bluebg)" label="Avg response" value="182 ms" delta="↗ -12 ms" deltaUp sub="p95 sits at 410 ms" />
-        <StatCard icon="alert-02" iconBg="var(--color-amberbg)" label="Active incidents" value="2" delta="↘ +1 today" sub="1 acknowledged" />
-        <StatCard icon="shield-01" iconBg="var(--color-violetbg)" label="Error budget left" value="63%" delta="↘ -9 pts" sub="deploys pause at 20%" />
+        <div data-reveal style={d(0)}><StatCard icon="activity-01" iconBg="var(--color-greenbg)" label="Uptime, 30 days" value="99.98%" delta="↗ +0.01" deltaUp sub="11 min downtime total" /></div>
+        <div data-reveal style={d(80)}><StatCard icon="zap" iconBg="var(--color-bluebg)" label="Avg response" value="182 ms" delta="↗ -12 ms" deltaUp sub="p95 sits at 410 ms" /></div>
+        <div data-reveal style={d(160)}><StatCard icon="alert-02" iconBg="var(--color-amberbg)" label="Active incidents" value="2" delta="↘ +1 today" sub="1 acknowledged" /></div>
+        <div data-reveal style={d(240)}><StatCard icon="shield-01" iconBg="var(--color-violetbg)" label="Error budget left" value="63%" delta="↘ -9 pts" sub="deploys pause at 20%" /></div>
       </div>
 
-      <div className="mt-[14px] grid gap-[14px] xl:grid-cols-[1fr_300px]">
+      <div data-reveal style={d(320)} className="mt-[14px] grid gap-[14px] xl:grid-cols-[1fr_300px]">
         <Card>
           <CardHead>
             <div><h3 className="text-[13.5px] font-semibold">Response time by region</h3><div className="mt-[1px] text-[11.5px] font-normal text-ink3">Median check latency, last 12 hours.</div></div>
@@ -69,15 +72,15 @@ export default function Dashboard() {
             <Seg small options={["p50", "p95"]} value={perc} onChange={setPerc} />
           </CardHead>
           <CardBody>
-            <div className="mb-[14px]"><Legend items={[{ label: "us-east", color: "#7ea6f5" }, { label: "eu-west", color: "#8fce6e" }, { label: "ap-south", color: "#f2b45c" }]} /></div>
-            <StackedBars data={LAT} labels={HOURS} colors={["#7ea6f5", "#8fce6e", "#f2b45c"]} />
+            <div className="mb-[14px]"><Legend items={[{ label: "us-east", color: "var(--chart-1)" }, { label: "eu-west", color: "var(--chart-2)" }, { label: "ap-south", color: "var(--chart-3)" }]} /></div>
+            <StackedBars data={LAT} labels={HOURS} colors={["var(--chart-1)", "var(--chart-2)", "var(--chart-3)"]} />
           </CardBody>
         </Card>
 
         <Card>
           <CardHead><h3 className="text-[13.5px] font-semibold">Active incidents</h3><span className="flex-1" /><Badge color="red">2 open</Badge></CardHead>
           <CardBody className="flex flex-col gap-[12px]">
-            <div className="rounded-[11px] border border-[#f3c8c8] bg-redbg p-[12px]">
+            <div className="rounded-[11px] border border-red/25 bg-redbg p-[12px]">
               <div className="flex items-center justify-between"><span className="text-[12.5px] font-semibold">checkout.fernwood.dev</span><span className="text-[11px] font-semibold text-red">Down</span></div>
               <div className="mt-[3px] text-[11.5px] text-ink2">3 consecutive failures in eu-west · 6 min</div>
               <Button size="sm" variant="secondary" className="mt-[9px]" onClick={() => setAck(true)}>Acknowledge</Button>
@@ -96,7 +99,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="mt-[14px]">
+      <div data-reveal style={d(420)} className="mt-[14px]">
         <Card>
           <CardHead><h3 className="text-[13.5px] font-semibold">Monitors</h3><span className="flex-1" /><Button variant="secondary" size="sm">View all</Button></CardHead>
           <TableWrap>
@@ -142,6 +145,7 @@ export default function Dashboard() {
           <Button onClick={() => { setNewMon(false); toast("Monitor created"); }}>Create monitor</Button>
         </ModalFoot>
       </Modal>
+      <MotionRoot />
     </Shell>
   );
 }

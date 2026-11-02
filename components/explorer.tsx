@@ -1,93 +1,148 @@
 "use client";
-import React, { useState } from "react";
-import { usePathname } from "next/navigation";
-import { Icon, type IconName } from "@/components/icons";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { CATEGORIES, SECTIONS, PAGES } from "./registry";
+import { InspectorProvider, useInspector } from "./section";
+import { Cmdk, cx, useTheme, type CmdkAction } from "./ui";
 
-type Leaf = { href: string; label: string; icon: IconName };
-type Folder = { id: string; label: string; icon: IconName; children: Leaf[] };
+/* The original FineLikeWine tile: a wine glass on a merlot square. */
+export function BrandMark({ size = 22 }: { size?: number }) {
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/brand/tile-light.svg" alt="" width={size} height={size} className="flex-none" style={{ width: size, height: size }} />;
+}
 
-const TREE: Folder[] = [
-  { id: "foundations", label: "foundations", icon: "paint-board", children: [
-    { href: "/foundations/colors", label: "colors", icon: "paint-board" },
-    { href: "/foundations/typography", label: "typography", icon: "text-font" },
-  ]},
-  { id: "components", label: "components", icon: "cursor-01", children: [
-    { href: "/components/buttons", label: "buttons", icon: "cursor-01" },
-    { href: "/components/badges", label: "badges", icon: "tag-01" },
-    { href: "/components/forms", label: "forms", icon: "check-box" },
-    { href: "/components/cards", label: "cards", icon: "credit-card" },
-    { href: "/components/tables", label: "tables", icon: "table-01" },
-    { href: "/components/navigation", label: "navigation", icon: "layout-01" },
-    { href: "/components/overlays", label: "overlays", icon: "layers-01" },
-    { href: "/components/charts", label: "charts", icon: "chart-bar-line" },
-    { href: "/components/feedback", label: "feedback", icon: "alert-circle" },
-  ]},
-  { id: "resources", label: "resources", icon: "grid-view", children: [
-    { href: "/resources/pages", label: "pages", icon: "grid-view" },
-  ]},
-  { id: "demos", label: "demos", icon: "rocket-01", children: [
-    { href: "/dashboard", label: "vigil dashboard", icon: "grid-view" },
-    { href: "/landing/meridian", label: "meridian landing", icon: "rocket-01" },
-    { href: "/landing/fieldnotes", label: "fieldnotes landing", icon: "mail-01" },
-  ]},
-];
+/* The tile nearest the middle of the screen is the one you are reading. */
+function useActive() {
+  const [active, setActive] = useState(SECTIONS[0].id);
+  useEffect(() => {
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      const cy = window.innerHeight / 2, cx0 = window.innerWidth / 2;
+      let best = SECTIONS[0].id, dist = Infinity;
+      for (const s of SECTIONS) {
+        const r = document.getElementById(s.id)?.getBoundingClientRect();
+        if (!r) continue;
+        const d = Math.hypot((r.top + r.bottom) / 2 - cy, ((r.left + r.right) / 2 - cx0) * 0.35);
+        if (d < dist) { dist = d; best = s.id; }
+      }
+      setActive(best);
+    };
+    const on = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    window.addEventListener("resize", on);
+    return () => { window.removeEventListener("scroll", on); window.removeEventListener("resize", on); cancelAnimationFrame(raf); };
+  }, []);
+  return active;
+}
 
-function FolderRow({ folder, pathname }: { folder: Folder; pathname: string }) {
-  const hasActive = folder.children.some(c => c.href === pathname);
-  const [open, setOpen] = useState(true);
+const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+export function Index({ onNavigate, onCommand }: { onNavigate?: () => void; onCommand: () => void }) {
+  const active = useActive();
+  const [theme, setTheme] = useTheme();
+  const list = useRef<HTMLDivElement>(null);
+  const items = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const [mark, setMark] = useState({ y: 0, h: 0, ready: false });
+
+  useLayoutEffect(() => {
+    const el = items.current[active];
+    if (!el) return;
+    setMark({ y: el.offsetTop, h: el.offsetHeight, ready: true });
+    const box = list.current;
+    if (box && (el.offsetTop < box.scrollTop + 40 || el.offsetTop > box.scrollTop + box.clientHeight - 80))
+      box.scrollTo({ top: el.offsetTop - box.clientHeight / 2, behavior: "smooth" });
+  }, [active]);
+
   return (
-    <div>
-      <button onClick={() => setOpen(o => !o)}
-        className={`group flex w-full items-center gap-[8px] rounded-[9px] px-[9px] py-[7px] font-mono text-[12.5px] transition-colors hover:bg-black/[.045] ${hasActive ? "text-winedeep" : "text-ink2"}`}
-        aria-expanded={open}>
-        <svg viewBox="0 0 24 24" fill="none" className={`h-[13px] w-[13px] shrink-0 text-ink3 transition-transform duration-200 ${open ? "rotate-90" : ""} ${hasActive ? "text-wine" : ""}`} aria-hidden="true">
-          <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <Icon name={folder.icon} className={`h-[15px] w-[15px] shrink-0 ${hasActive ? "text-wine" : "text-ink3"}`} />
-        <span className={`truncate ${hasActive ? "font-medium" : ""}`}>{folder.label}/</span>
-        <span className="ml-auto rounded-full bg-black/[.05] px-[7px] py-[1px] text-[10px] tabular-nums text-ink3">{folder.children.length}</span>
-      </button>
-      <div className={`grid transition-all duration-200 ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-        <div className="overflow-hidden">
-          <div className="ml-[19px] border-l border-line2 pl-[8px]">
-            {folder.children.map(c => {
-              const active = pathname === c.href;
-              return (
-                <a key={c.href} href={c.href}
-                  className={`relative flex items-center gap-[8px] rounded-[8px] px-[9px] py-[6px] font-mono text-[12.5px] transition-all hover:bg-black/[.045] ${active ? "bg-winebg font-medium text-winedeep" : "text-ink2"}`}>
-                  {active && <span className="absolute -left-[9px] top-1/2 h-[14px] w-[2px] -translate-y-1/2 rounded-full bg-wine" />}
-                  <Icon name={c.icon} className={`h-[14px] w-[14px] shrink-0 ${active ? "text-wine" : "text-ink3"}`} />
-                  <span className="truncate">{c.label}</span>
+    <div className="flex h-full flex-col">
+      <div className="px-[32px] pt-[36px]">
+        <Link href="/" className="flex items-center gap-[11px] text-[18px] font-semibold tracking-[-0.025em]">
+          <BrandMark size={34} />finelikewine
+        </Link>
+      </div>
+
+      <div ref={list} className="fade-y relative mt-[28px] min-h-0 flex-1 overflow-y-auto px-[32px] pb-[40px] pt-[8px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="relative">
+          <span aria-hidden className={cx("absolute -left-[14px] w-px bg-ink transition-[transform,height,opacity] duration-[900ms] ease-[cubic-bezier(.16,1,.3,1)]", mark.ready ? "opacity-100" : "opacity-0")}
+            style={{ transform: `translateY(${mark.y + 8}px)`, height: Math.max(0, mark.h - 16) }} />
+          {CATEGORIES.map((c, ci) => (
+            <div key={c.id} className={ci ? "mt-[26px]" : ""}>
+              <div className="mb-[6px] text-[12px] text-ink3/80">{c.title}</div>
+              {SECTIONS.filter(s => s.cat === c.id).map(s => (
+                <a key={s.id} href={`#${s.id}`} ref={el => { items.current[s.id] = el; }}
+                  onClick={e => { e.preventDefault(); go(s.id); onNavigate?.(); }}
+                  className={cx("block py-[5px] text-[13.5px] transition-colors duration-500", active === s.id ? "text-ink" : "text-ink3 hover:text-ink2")}>
+                  {s.title}
                 </a>
-              );
-            })}
+              ))}
+            </div>
+          ))}
+          <div className="mt-[26px]">
+            <div className="mb-[6px] text-[12px] text-ink3/80">Pages</div>
+            {PAGES.map(p => (
+              <a key={p.href} href={p.href} className="block py-[5px] text-[13.5px] text-ink3 transition-colors duration-500 hover:text-ink2">{p.title}</a>
+            ))}
           </div>
         </div>
+      </div>
+
+      <div className="flex items-center gap-[18px] px-[32px] pb-[30px] pt-[14px] text-[12.5px] text-ink3">
+        <button onClick={onCommand} className="transition-colors duration-500 hover:text-ink">Search <span className="font-mono text-[11px]">⌘K</span></button>
+        <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="transition-colors duration-500 hover:text-ink">{theme === "dark" ? "Light" : "Dark"}</button>
+        <a href="https://github.com/Charannsai/finelikewine" className="transition-colors duration-500 hover:text-ink">GitHub</a>
       </div>
     </div>
   );
 }
 
-export function Explorer() {
-  const pathname = usePathname();
+function ShellInner({ children }: { children: React.ReactNode }) {
+  const [cmdk, setCmdk] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [theme, setTheme] = useTheme();
+  const { setOpen } = useInspector();
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setCmdk(o => !o); } };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+  useEffect(() => { document.body.style.overflow = drawer ? "hidden" : ""; }, [drawer]);
+
+  const actions: CmdkAction[] = [
+    ...SECTIONS.map(s => ({ label: s.title, icon: s.icon, group: CATEGORIES.find(c => c.id === s.cat)!.title, onSelect: () => setOpen(s.id) })),
+    ...PAGES.map(p => ({ label: p.title, icon: p.icon, hint: p.desc, href: p.href, group: "Pages" })),
+    { label: theme === "dark" ? "Switch to light" : "Switch to dark", icon: "magic-wand-01", group: "Preferences", onSelect: () => setTheme(theme === "dark" ? "light" : "dark") },
+  ];
+
   return (
-    <nav className="fixed inset-y-0 left-0 z-50 hidden w-[220px] flex-col border-r border-line bg-paper px-[12px] py-[16px] lg:flex" aria-label="Library explorer">
-      <a href="/" className="mb-[16px] flex items-center gap-[9px] px-[8px]">
-        <img src="/brand/tile-light.svg" alt="" className="h-[26px] w-[26px] rounded-[8px]" />
-        <span className="text-[14.5px] font-semibold tracking-[-0.01em]">finelikewine<span className="text-wine">.</span></span>
-      </a>
-      <a href="/" className={`mb-[10px] flex items-center gap-[8px] rounded-[9px] px-[9px] py-[7px] font-mono text-[12.5px] transition-colors hover:bg-black/[.045] ${pathname === "/" ? "bg-winebg font-medium text-winedeep" : "text-ink2"}`}>
-        <Icon name="home-02" className={`h-[15px] w-[15px] ${pathname === "/" ? "text-wine" : "text-ink3"}`} />overview
-      </a>
-      <div className="mb-[8px] px-[9px] text-[10.5px] font-semibold uppercase tracking-[0.08em] text-ink3">library</div>
-      <div className="flex flex-col gap-[2px] overflow-y-auto pb-[10px]">
-        {TREE.map(f => <FolderRow key={f.id} folder={f} pathname={pathname} />)}
+    <div className="min-h-screen bg-paper">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] lg:block">
+        <Index onCommand={() => setCmdk(true)} />
+      </aside>
+
+      <div className="sticky top-0 z-40 flex h-[56px] items-center bg-paper/85 px-[20px] backdrop-blur-xl lg:hidden">
+        <Link href="/" className="flex items-center gap-[10px] text-[16.5px] font-semibold tracking-[-0.02em]"><BrandMark size={30} />finelikewine</Link>
+        <span className="flex-1" />
+        <button onClick={() => setDrawer(true)} className="text-[13px] text-ink2">Index</button>
       </div>
-      <div className="mt-auto border-t border-line pt-[10px]">
-        <a href="https://github.com/Charannsai/finelikewine" className="flex items-center gap-[8px] rounded-[9px] px-[9px] py-[7px] font-mono text-[12.5px] text-ink2 transition-colors hover:bg-black/[.045]">
-          <Icon name="github" className="h-[15px] w-[15px] text-ink3" />github
-        </a>
-      </div>
-    </nav>
+      {drawer && (
+        <div className="anim-fade fixed inset-0 z-[70] bg-paper/70 backdrop-blur-md lg:hidden" onMouseDown={e => { if (e.target === e.currentTarget) setDrawer(false); }}>
+          <div className="anim-in h-full w-[min(280px,86vw)] border-r border-line bg-paper">
+            <Index onNavigate={() => setDrawer(false)} onCommand={() => { setDrawer(false); setCmdk(true); }} />
+          </div>
+        </div>
+      )}
+
+      <main className="min-w-0 lg:pl-[248px]">{children}</main>
+      {/* Soft edges: components fade out at the top and bottom of the viewport as they scroll. */}
+      <div aria-hidden className="pointer-events-none fixed inset-x-0 top-[56px] z-30 h-[40px] bg-linear-to-b from-paper to-transparent lg:left-[248px] lg:top-0 lg:h-[64px]" />
+      <div aria-hidden className="pointer-events-none fixed inset-x-0 bottom-0 z-30 h-[80px] bg-linear-to-t from-paper to-transparent lg:left-[248px]" />
+      <Cmdk open={cmdk} onClose={() => setCmdk(false)} actions={actions} />
+    </div>
   );
+}
+
+export function LibraryShell({ children }: { children: React.ReactNode }) {
+  return <InspectorProvider><ShellInner>{children}</ShellInner></InspectorProvider>;
 }

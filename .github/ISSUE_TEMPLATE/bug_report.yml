@@ -1,0 +1,28 @@
+name: Bug report
+description: Something in a component or page does not work as expected.
+labels: [bug]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component or page
+      placeholder: e.g. Select, Dialog, /landing/meridian
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options: [Light, Dark, Both]
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: e.g. Chrome 142 on Windows 11

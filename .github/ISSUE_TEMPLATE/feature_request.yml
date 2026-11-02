@@ -1,0 +1,16 @@
+name: Component or feature request
+description: Suggest a new component, variant or improvement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe the component or change, and where you would use it.
+    validations:
+      required: true
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: How should it behave?
+      description: States, variants, keyboard behavior, anything that matters.

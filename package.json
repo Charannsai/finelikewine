@@ -1,12 +1,37 @@
 {
-  "name": "finelikewine-next",
+  "name": "finelikewine",
   "version": "0.1.0",
   "private": true,
+  "description": "Interface components for Next.js and Tailwind. Each one is a single file you copy into your app.",
+  "license": "MIT",
+  "author": "Charannsai",
+  "homepage": "https://github.com/Charannsai/finelikewine#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Charannsai/finelikewine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Charannsai/finelikewine/issues"
+  },
+  "keywords": [
+    "react",
+    "nextjs",
+    "tailwindcss",
+    "ui",
+    "components",
+    "design-system",
+    "copy-paste"
+  ],
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck"
   },
   "dependencies": {
     "next": "16.4.5",
