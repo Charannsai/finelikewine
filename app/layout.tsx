@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { ToastProvider } from "@/components/ui";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ToastProvider>{children}</ToastProvider>
+        <Analytics />
       </body>
     </html>
   );
