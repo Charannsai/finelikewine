@@ -85,7 +85,7 @@ export default function LibraryPage() {
       {/* ================= HERO ================= */}
       <header id="overview" className="relative overflow-visible py-[64px] pb-[40px]">
         <span className="inline-flex items-center gap-[8px] rounded-full border border-wineline bg-winebg px-[13px] py-[6px] text-[12.5px] font-medium text-winedeep">
-          <Icon name="sparkles" className="h-[14px] w-[14px] text-wine" />Open source UI library · zero runtime dependencies
+          <Icon name="sparkles" className="h-[14px] w-[14px] text-wine" />Open source UI library · components need no extra UI packages
         </span>
         <h1 className="mt-[22px] max-w-[640px] font-display text-[clamp(44px,6.4vw,76px)] leading-[1.02] tracking-[-0.01em]">
           Interfaces that <em className="italic text-wine">age well.</em>
@@ -98,7 +98,7 @@ export default function LibraryPage() {
           <a href="https://github.com/Charannsai/finelikewine"><Button variant="secondary" size="lg"><Icon name="github" className="h-[16px] w-[16px]" />Star on GitHub</Button></a>
         </div>
         <div className="mt-[34px] flex flex-wrap gap-[26px]">
-          {[["12", "sections"], ["4", "pages"], ["80", "icons"], ["0", "dependencies"]].map(([b, s]) => (
+          {[["12", "sections"], ["4", "pages"], ["80", "icons"], ["0", "extra UI packages"]].map(([b, s]) => (
             <div key={s} className="flex flex-col gap-[2px]"><b className="text-[19px] font-semibold tabular-nums">{b}</b><span className="text-[12px] text-ink3">{s}</span></div>
           ))}
         </div>
@@ -123,6 +123,13 @@ export default function LibraryPage() {
           </div>
         </div>
       </header>
+
+      {/* Get the code strip */}
+      <div className="mb-[26px] flex flex-wrap items-center gap-x-[10px] gap-y-[6px] rounded-[14px] border border-wineline bg-winebg px-[18px] py-[13px] text-[13px] leading-[1.55] text-winedeep">
+        <Icon name="github" className="h-[15px] w-[15px] shrink-0" />
+        <span>Take what you need: every component lives in <span className="font-mono text-[12px]">components/ui.tsx</span>, icons in <span className="font-mono text-[12px]">components/icons.tsx</span> and the app shell in <span className="font-mono text-[12px]">components/chrome.tsx</span>. Copy the files into your own Next.js + Tailwind project; there is no component package to install.</span>
+        <a href="https://github.com/Charannsai/finelikewine" className="ml-auto shrink-0 font-medium underline underline-offset-2">Browse the repo</a>
+      </div>
 
       {/* ================= 01 COLOR ================= */}
       <Sec id="colors" num="01" title="Color" lede="A warm neutral base, one wine accent, and muted status tones. Nothing shouts.">
@@ -161,7 +168,10 @@ export default function LibraryPage() {
           <Button size="sm">Small</Button>
           <Button size="lg">Get started<Icon name="arrow-right-01" /></Button>
         </Stage>
-        <Code>{`<Button>Save changes</Button>
+        <Code>{`import { Button } from "@/components/ui";
+import { Icon } from "@/components/icons";
+
+<Button>Save changes</Button>
 <Button variant="secondary">Cancel</Button>
 <Button variant="ghost">Learn more</Button>
 <Button size="lg">Get started<Icon name="arrow-right-01" /></Button>`}</Code>
@@ -182,7 +192,9 @@ export default function LibraryPage() {
           <Tag on>Design</Tag><Tag>Engineering</Tag><Tag>Research</Tag>
           <Kbd>⌘K</Kbd> <Kbd>Esc</Kbd> <Kbd>↑</Kbd>
         </Stage>
-        <Code>{`<Badge color="green" dot>Up</Badge>
+        <Code>{`import { Badge, Tag } from "@/components/ui";
+
+<Badge color="green" dot>Up</Badge>
 <Tag on>Design</Tag>`}</Code>
       </Sec>
 
@@ -204,7 +216,9 @@ export default function LibraryPage() {
           <span className="w-full" />
           <Seg options={["Day", "Month", "Year"]} value={seg} onChange={setSeg} />
         </Stage>
-        <Code>{`<Toggle checked={on} onChange={setOn} />
+        <Code>{`import { Toggle, Field, Input } from "@/components/ui";
+
+<Toggle checked={on} onChange={setOn} />
 <Field label="Email" hint="We never share your address.">
   <Input type="email" placeholder="you@studio.com" />
 </Field>`}</Code>
@@ -237,7 +251,9 @@ export default function LibraryPage() {
             <CardFoot><Button size="sm" onClick={() => toast("Handoff note sent to Dana")}>Hand off</Button><Button variant="ghost" size="sm">Rotation</Button></CardFoot>
           </Card>
         </div>
-        <Code>{`<Card>
+        <Code>{`import { Card, CardHead, CardBody, CardFoot, Badge, Button } from "@/components/ui";
+
+<Card>
   <CardHead><h3>Project brief</h3><Badge color="violet">In review</Badge></CardHead>
   <CardBody>...</CardBody>
   <CardFoot><Button size="sm">Open</Button></CardFoot>
@@ -347,10 +363,10 @@ export default function LibraryPage() {
       </Sec>
 
       {/* ================= 12 ICONS ================= */}
-      <Sec id="icons" num="12" title="Icons" lede="Every glyph comes from the free Hugeicons set: stroke rounded, 1.5px on a 24 grid, currentColor. MIT licensed, so the library stays fully open. Click any icon to copy its name.">
+      <Sec id="icons" num="12" title="Icons" lede="Every glyph comes from the free Hugeicons set: stroke rounded, 1.5px on a 24 grid, currentColor. MIT licensed, so the library stays fully open. Click any icon to copy its usage snippet.">
         <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-[8px]">
           {iconNames.slice(0, 48).map(n => (
-            <button key={n} onClick={() => { navigator.clipboard?.writeText(n); toast(`Copied: ${n}`); }}
+            <button key={n} onClick={() => { navigator.clipboard?.writeText(`<Icon name="${n}" />`); toast(`Copied: <Icon name="${n}" />`); }}
               className="flex flex-col items-center gap-[9px] rounded-[12px] border border-line bg-surface px-[6px] pb-[13px] pt-[16px] transition-all hover:-translate-y-[2px] hover:border-wineline hover:shadow-[0_10px_22px_-14px_rgba(114,46,63,.35)]">
               <Icon name={n} className="h-[22px] w-[22px]" />
               <span className="font-mono text-[10.5px] text-ink3">{n}</span>

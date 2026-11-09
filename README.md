@@ -4,7 +4,7 @@ An open-source library of fine, simple, modern UI components, pages and landing 
 
 ## Stack
 
-Next.js (App Router), TypeScript and Tailwind CSS. No component runtime dependencies.
+Next.js (App Router), TypeScript and Tailwind CSS. The UI components themselves add no packages beyond that stack; you copy the source files, you do not install a component library.
 
 ## Structure
 
