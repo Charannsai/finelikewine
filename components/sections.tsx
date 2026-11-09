@@ -49,7 +49,7 @@ export function Hero() {
           <a href="https://github.com/Charannsai/finelikewine"><Button variant="secondary" size="lg"><Icon name="github" className="h-[16px] w-[16px]" />Star on GitHub</Button></a>
         </div>
         <div className="mt-[34px] flex flex-wrap gap-[26px]">
-          {[["12", "sections"], ["4", "pages"], ["80", "icons"], ["0", "extra UI packages"]].map(([b, s]) => (
+          {[["12", "sections"], ["16", "routes"], ["3", "page designs"], ["0", "extra UI packages"]].map(([b, s]) => (
             <div key={s} className="flex flex-col gap-[2px]"><b className="text-[19px] font-semibold tabular-nums">{b}</b><span className="text-[12px] text-ink3">{s}</span></div>
           ))}
         </div>
