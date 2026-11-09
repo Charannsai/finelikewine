@@ -1,88 +1,39 @@
 "use client";
 import React, { useState } from "react";
 import { Icon, iconNames, type IconName } from "@/components/icons";
-import { Sidebar, Topbar, Shell, type NavGroup } from "@/components/chrome";
 import { Button, Badge, Tag, Kbd, Card, CardHead, CardBody, CardFoot, StatCard, Field, Input, Textarea, Select, SearchInput, Toggle, Checkbox, Radio, Seg, Tabs, Dropdown, MenuItem, Modal, ModalHead, ModalFoot, TableWrap, Tbl, Tr, Pagination, Alert, EmptyState, Avatar, AvatarStack, Progress, Spark, StackedBars, Donut, Legend, Code, useToast } from "@/components/ui";
 
-const NAV: NavGroup[] = [
-  { items: [{ href: "#overview", label: "Overview", icon: "home-02" }] },
-  { label: "Foundation", items: [
-    { href: "#colors", label: "Color", icon: "paint-board" },
-    { href: "#type", label: "Typography", icon: "text-font" },
-  ]},
-  { label: "Components", items: [
-    { href: "#buttons", label: "Buttons", icon: "cursor-01" },
-    { href: "#badges", label: "Badges & tags", icon: "tag-01" },
-    { href: "#forms", label: "Inputs & controls", icon: "check-box" },
-    { href: "#cards", label: "Cards", icon: "credit-card" },
-    { href: "#tables", label: "Tables", icon: "table-01" },
-    { href: "#navigation", label: "Tabs & menus", icon: "layout-01" },
-    { href: "#overlays", label: "Modal, toast & palette", icon: "layers-01" },
-    { href: "#charts", label: "Charts", icon: "chart-bar-line" },
-    { href: "#feedback", label: "Feedback & states", icon: "alert-circle" },
-    { href: "#icons", label: "Icons", icon: "sparkles" },
-  ]},
-  { label: "Pages", items: [
-    { href: "/dashboard", label: "Dashboard demo", icon: "grid-view" },
-    { href: "/landing/meridian", label: "Meridian landing", icon: "rocket-01" },
-    { href: "/landing/fieldnotes", label: "Fieldnotes landing", icon: "mail-01" },
-  ]},
-  { label: "Project", items: [
-    { href: "https://github.com/Charannsai/finelikewine", label: "GitHub", icon: "github" },
-  ]},
-];
+export const SWATCHES: [string, string, boolean][] = [["ink","#1b1917",false],["paper","#f6f5f2",true],["surface","#ffffff",true],["positive","var(--color-greenbg)",true],["warning","var(--color-amberbg)",true],["danger","var(--color-redbg)",true],["info","var(--color-bluebg)",true],["wine","var(--color-winebg)",true]];
 
-const SWATCHES: [string, string, boolean][] = [
-  ["ink", "#1b1917", false], ["paper", "#f6f5f2", true], ["surface", "#ffffff", true],
-  ["positive", "var(--color-greenbg)", true], ["warning", "var(--color-amberbg)", true],
-  ["danger", "var(--color-redbg)", true], ["info", "var(--color-bluebg)", true],
-  ["wine", "var(--color-winebg)", true],
-];
-
-function Sec({ id, num, title, lede, children }: { id: string; num: string; title: string; lede: string; children: React.ReactNode }) {
+export function Sec({ id, num, title, lede, code, prompt, children }: { id: string; num: string; title: string; lede: string; code?: string; prompt?: string; children: React.ReactNode }) {
+  const toast = useToast();
+  const copy = (text: string, what: string) => { navigator.clipboard?.writeText(text); toast(what + " copied"); };
   return (
-    <section id={id} className="pt-[64px]">
-      <div className="mb-[26px] flex items-baseline gap-[18px] border-b border-line pb-[16px]">
+    <section id={id} className="pt-[10px]">
+      <div className="mb-[26px] flex flex-wrap items-end gap-[18px] border-b border-line pb-[16px]">
         <span className="min-w-[56px] font-display text-[44px] italic leading-none text-wine">{num}</span>
-        <div>
-          <h2 className="text-[22px] font-semibold tracking-[-0.01em]">{title} <a href={`#${id}`} className="text-ink3 opacity-0 transition-opacity hover:text-wine [section:hover_&]:opacity-100">#</a></h2>
-          <p className="mt-[6px] text-[13.5px] text-ink2">{lede}</p>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-[22px] font-semibold tracking-[-0.01em]">{title}</h2>
+          <p className="mt-[6px] max-w-[560px] text-[13.5px] text-ink2">{lede}</p>
+        </div>
+        <div className="flex gap-[8px]">
+          {code && <button onClick={() => copy(code, "Code")} className="flex items-center gap-[6px] rounded-[9px] border border-line bg-surface px-[11px] py-[6px] text-[12px] font-medium text-ink2 transition-all hover:border-wineline hover:text-winedeep"><Icon name="copy-01" className="h-[13px] w-[13px]" />Copy code</button>}
+          {prompt && <button onClick={() => copy(prompt, "Prompt")} className="flex items-center gap-[6px] rounded-[9px] border border-line bg-surface px-[11px] py-[6px] text-[12px] font-medium text-ink2 transition-all hover:border-wineline hover:text-winedeep"><Icon name="sparkles" className="h-[13px] w-[13px]" />Copy prompt</button>}
         </div>
       </div>
       {children}
     </section>
   );
 }
-function Stage({ children, col }: { children: React.ReactNode; col?: boolean }) {
+export function Stage({ children, col }: { children: React.ReactNode; col?: boolean }) {
   return <div className={`flex ${col ? "flex-col" : "flex-wrap items-center"} gap-[12px] rounded-[12px] border border-line bg-surface p-[22px]`}>{children}</div>;
 }
 
-export default function LibraryPage() {
+export function Hero() {
   const toast = useToast();
-  const [modal, setModal] = useState(false);
-  const [monitorModal, setMonitorModal] = useState(false);
-  const [seg, setSeg] = useState("Month");
   const [digest, setDigest] = useState(true);
   const [alerts, setAlerts] = useState(false);
-  const [chartRange, setChartRange] = useState("Monthly");
-
   return (
-    <Shell
-      sidebar={<Sidebar groups={NAV} brand="FineLikeWine" tile />}
-      topbar={<Topbar crumbs={<>Library › <b className="text-ink">Components</b></>} actions={[
-        { label: "Dashboard demo", icon: "grid-view", href: "/dashboard", group: "Go to" },
-        { label: "Meridian landing page", icon: "rocket-01", href: "/landing/meridian", group: "Go to" },
-        { label: "Fieldnotes landing page", icon: "mail-01", href: "/landing/fieldnotes", group: "Go to" },
-        { label: "Buttons", href: "#buttons", group: "Components" },
-        { label: "Inputs and controls", href: "#forms", group: "Components" },
-        { label: "Tables", href: "#tables", group: "Components" },
-        { label: "Modal and toast", href: "#overlays", group: "Components" },
-        { label: "Charts", href: "#charts", group: "Components" },
-        { label: "New monitor", icon: "add-01", kbd: "C", onSelect: () => toast("Monitor created"), group: "Actions" },
-        { label: "Copy clone URL", icon: "copy-01", group: "Actions" },
-      ]} />}
-    >
-      {/* ================= HERO ================= */}
       <header id="overview" className="relative overflow-visible py-[64px] pb-[40px]">
         <span className="inline-flex items-center gap-[8px] rounded-full border border-wineline bg-winebg px-[13px] py-[6px] text-[12.5px] font-medium text-winedeep">
           <Icon name="sparkles" className="h-[14px] w-[14px] text-wine" />Open source UI library · components need no extra UI packages
@@ -123,16 +74,23 @@ export default function LibraryPage() {
           </div>
         </div>
       </header>
+  );
+}
 
-      {/* Get the code strip */}
+export function GetCodeStrip() {
+  return (
       <div className="mb-[26px] flex flex-wrap items-center gap-x-[10px] gap-y-[6px] rounded-[14px] border border-wineline bg-winebg px-[18px] py-[13px] text-[13px] leading-[1.55] text-winedeep">
         <Icon name="github" className="h-[15px] w-[15px] shrink-0" />
         <span>Take what you need: every component lives in <span className="font-mono text-[12px]">components/ui.tsx</span>, icons in <span className="font-mono text-[12px]">components/icons.tsx</span> and the app shell in <span className="font-mono text-[12px]">components/chrome.tsx</span>. Copy the files into your own Next.js + Tailwind project; there is no component package to install.</span>
         <a href="https://github.com/Charannsai/finelikewine" className="ml-auto shrink-0 font-medium underline underline-offset-2">Browse the repo</a>
       </div>
+  );
+}
 
-      {/* ================= 01 COLOR ================= */}
-      <Sec id="colors" num="01" title="Color" lede="A warm neutral base, one wine accent, and muted status tones. Nothing shouts.">
+export function ColorsSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="colors" num="01" title="Color" lede="A warm neutral base, one wine accent, and muted status tones. Nothing shouts." prompt={"Design a warm neutral UI palette with one deep merlot accent (#722E3F), muted green/amber/red/blue status tones, 1px hairline borders and paper-tinted backgrounds. Show each color as a rounded swatch with its token name and hex."}>
         <Stage>
           {SWATCHES.map(([n, c, border]) => (
             <div key={n} className="min-w-[120px] flex-1">
@@ -142,9 +100,13 @@ export default function LibraryPage() {
           ))}
         </Stage>
       </Sec>
+  </>);
+}
 
-      {/* ================= 02 TYPE ================= */}
-      <Sec id="type" num="02" title="Typography" lede="Inter for the interface, Instrument Serif for moments that deserve a voice.">
+export function TypeSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="type" num="02" title="Typography" lede="Inter for the interface, Instrument Serif for moments that deserve a voice." prompt={"Design a typography scale for a calm product UI: Inter for interface text at 14px, an elegant italic serif for display headlines, tabular numerals for metrics, mono for meta labels. Show each style with a short spec caption."}>
         <Stage col>
           <div><div className="font-display text-[38px] leading-tight">Design that gets out of the way</div><div className="mt-[4px] font-mono text-[11.5px] text-ink3">display · Instrument Serif</div></div>
           <div className="h-px w-full bg-line" />
@@ -155,9 +117,19 @@ export default function LibraryPage() {
           <div><div className="text-[26px] font-semibold tabular-nums">99.98%</div><div className="mt-[4px] font-mono text-[11.5px] text-ink3">metric · 26 / 600 / tabular-nums</div></div>
         </Stage>
       </Sec>
+  </>);
+}
 
-      {/* ================= 03 BUTTONS ================= */}
-      <Sec id="buttons" num="03" title="Buttons" lede="One ink primary. Quiet secondaries. Sizes that nest inside toolbars and tables.">
+export function ButtonsSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="buttons" num="03" title="Buttons" lede="One ink primary. Quiet secondaries. Sizes that nest inside toolbars and tables." code={`import { Button } from "@/components/ui";
+import { Icon } from "@/components/icons";
+
+<Button>Save changes</Button>
+<Button variant="secondary">Cancel</Button>
+<Button variant="ghost">Learn more</Button>
+<Button size="lg">Get started<Icon name="arrow-right-01" /></Button>`} prompt={"Design a button set for a refined product UI: one ink-black primary with a soft press state, quiet secondary and ghost variants, a danger option, small and large sizes, plus an icon-only toolbar button. 10px radii, 1px borders, no gradients."}>
         <Stage>
           <Button onClick={() => toast("Changes saved")}>Save changes</Button>
           <Button variant="secondary">Cancel</Button>
@@ -176,9 +148,16 @@ import { Icon } from "@/components/icons";
 <Button variant="ghost">Learn more</Button>
 <Button size="lg">Get started<Icon name="arrow-right-01" /></Button>`}</Code>
       </Sec>
+  </>);
+}
 
-      {/* ================= 04 BADGES ================= */}
-      <Sec id="badges" num="04" title="Badges & tags" lede="Status at a glance. Tags are toggleable filters.">
+export function BadgesSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="badges" num="04" title="Badges & tags" lede="Status at a glance. Tags are toggleable filters." code={`import { Badge, Tag } from "@/components/ui";
+
+<Badge color="green" dot>Up</Badge>
+<Tag on>Design</Tag>`} prompt={"Design status badges and tags: soft tinted backgrounds with a 1px ring, an optional pulse dot for live states, and dismissible filter tags with a small close icon."}>
         <Stage>
           <Badge color="green" dot>Paid</Badge>
           <Badge color="amber" dot>Pending</Badge>
@@ -197,9 +176,21 @@ import { Icon } from "@/components/icons";
 <Badge color="green" dot>Up</Badge>
 <Tag on>Design</Tag>`}</Code>
       </Sec>
+  </>);
+}
 
-      {/* ================= 05 FORMS ================= */}
-      <Sec id="forms" num="05" title="Inputs & controls" lede="Fine 1px borders, a soft wine focus ring, and honest error states.">
+export function FormsSec() {
+  const toast = useToast();
+  const [seg, setSeg] = useState("Month");
+  const [digest, setDigest] = useState(true);
+  const [alerts, setAlerts] = useState(false);
+  return (<>
+      <Sec id="forms" num="05" title="Inputs & controls" lede="Fine 1px borders, a soft wine focus ring, and honest error states." code={`import { Toggle, Field, Input } from "@/components/ui";
+
+<Toggle checked={on} onChange={setOn} />
+<Field label="Email" hint="We never share your address.">
+  <Input type="email" placeholder="you@studio.com" />
+</Field>`} prompt={"Design form controls for a calm dashboard: labeled text inputs with hint text, a textarea, a select, a search input with prefix icon, an iOS-style toggle, checkboxes, radios and a segmented Day/Month/Year control. Focus rings in soft merlot."}>
         <Stage>
           <Field label="Email" hint="We never share your address."><Input type="email" placeholder="you@studio.com" /></Field>
           <Field label="Search"><SearchInput placeholder="Search components..." /></Field>
@@ -223,9 +214,19 @@ import { Icon } from "@/components/icons";
   <Input type="email" placeholder="you@studio.com" />
 </Field>`}</Code>
       </Sec>
+  </>);
+}
 
-      {/* ================= 06 CARDS ================= */}
-      <Sec id="cards" num="06" title="Cards" lede="White on warm paper, one-pixel borders, headers that carry their own actions.">
+export function CardsSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="cards" num="06" title="Cards" lede="White on warm paper, one-pixel borders, headers that carry their own actions." code={`import { Card, CardHead, CardBody, CardFoot, Badge, Button } from "@/components/ui";
+
+<Card>
+  <CardHead><h3>Project brief</h3><Badge color="violet">In review</Badge></CardHead>
+  <CardBody>...</CardBody>
+  <CardFoot><Button size="sm">Open</Button></CardFoot>
+</Card>`} prompt={"Design dashboard cards: white surfaces on warm paper, 1px borders, headers with their own actions, a stat card with icon tile, delta and sparkline, a project card with progress and avatar stack, and an on-call card with hand-off action."}>
         <div className="grid gap-[14px] md:grid-cols-3">
           <StatCard icon="activity-01" iconBg="var(--color-greenbg)" label="Uptime, 30 days" value="99.98%" delta="↗ +0.01" deltaUp sub="11 min downtime total" />
           <StatCard icon="zap" iconBg="var(--color-bluebg)" label="Avg response" value="182 ms" delta="↗ -12 ms" deltaUp sub="p95 sits at 410 ms" />
@@ -259,9 +260,13 @@ import { Icon } from "@/components/icons";
   <CardFoot><Button size="sm">Open</Button></CardFoot>
 </Card>`}</Code>
       </Sec>
+  </>);
+}
 
-      {/* ================= 07 TABLES ================= */}
-      <Sec id="tables" num="07" title="Tables" lede="Sticky-quiet headers, hover rows, right-aligned numbers, status badges inline.">
+export function TablesSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="tables" num="07" title="Tables" lede="Sticky-quiet headers, hover rows, right-aligned numbers, status badges inline." prompt={"Design a data table for an uptime dashboard: quiet sticky header, hover rows, right-aligned tabular numbers, inline status badges, per-row menu and a footer with row count and pagination."}>
         <TableWrap>
           <Tbl head={["Monitor", "Type", "Region", "Latency", "Uptime", "Status", ""]}>
             {[
@@ -282,9 +287,13 @@ import { Icon } from "@/components/icons";
           <Pagination current={1} total={3} />
         </div>
       </Sec>
+  </>);
+}
 
-      {/* ================= 08 TABS & MENUS ================= */}
-      <Sec id="navigation" num="08" title="Tabs & menus" lede="Underline tabs, dropdown menus with keyboard hints, and breadcrumbs.">
+export function NavSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="navigation" num="08" title="Tabs & menus" lede="Underline tabs, dropdown menus with keyboard hints, and breadcrumbs." prompt={"Design navigation components: underline tabs with an animated active indicator, a dropdown menu with icons, keyboard hints and a danger item, and a breadcrumbs row."}>
         <Stage col>
           <Tabs tabs={["Overview", "Members", "Settings"]} panels={[
             <span key="a">Overview panel. Panels swap without a page load.</span>,
@@ -305,9 +314,15 @@ import { Icon } from "@/components/icons";
           </Stage>
         </div>
       </Sec>
+  </>);
+}
 
-      {/* ================= 09 OVERLAYS ================= */}
-      <Sec id="overlays" num="09" title="Modal, toast & palette" lede="Overlays arrive with a short spring and leave quietly. Focus is trapped, Escape closes. Try each one.">
+export function OverlaysSec() {
+  const toast = useToast();
+  const [modal, setModal] = useState(false);
+  const [monitorModal, setMonitorModal] = useState(false);
+  return (<>
+      <Sec id="overlays" num="09" title="Modal, toast & palette" lede="Overlays arrive with a short spring and leave quietly. Focus is trapped, Escape closes. Try each one." prompt={"Design overlay components: a spring-in modal with header icon tile, radio choice list and footer actions, a slide-up toast with icon, and a command palette with grouped actions and keyboard hints."}>
         <Stage>
           <Button onClick={() => setModal(true)}>Open modal</Button>
           <Button variant="secondary" onClick={() => toast("Invite sent to dana@fernwood.dev")}>Show toast</Button>
@@ -315,9 +330,42 @@ import { Icon } from "@/components/icons";
           <span className="text-[12.5px] text-ink3">Press <Kbd>⌘K</Kbd> anywhere for the palette</span>
         </Stage>
       </Sec>
+      <Modal open={modal} onClose={() => setModal(false)} label="Acknowledge incident">
+        <ModalHead icon="alert-02" iconBg="var(--color-amberbg)" title="Acknowledge incident" sub="Checkout has failed 3 health checks in a row in eu-west." onClose={() => setModal(false)} />
+        <div className="px-[18px] py-[16px]">
+          {[["Monitor", "checkout.fernwood.dev"], ["Started", "14:02 IST · 6 min ago"]].map(([k, v]) => (
+            <div key={k} className="flex justify-between py-[7px] text-[13px]"><span className="text-ink3">{k}</span><span className="font-medium">{v}</span></div>
+          ))}
+          <div className="mt-[10px] flex flex-col gap-[8px]">
+            <label className="flex cursor-pointer items-start gap-[10px] rounded-[11px] border border-ink bg-surface2 p-[12px]"><input type="radio" name="po" defaultChecked className="mt-[3px]" /><span><span className="block text-[13px] font-medium">Fix is deploying</span><span className="block text-[12px] text-ink3">Auto-resolve when checks pass again.</span></span></label>
+            <label className="flex cursor-pointer items-start gap-[10px] rounded-[11px] border border-line p-[12px]"><input type="radio" name="po" className="mt-[3px]" /><span><span className="block text-[13px] font-medium">Monitoring only</span><span className="block text-[12px] text-ink3">Acknowledge, but keep paging until it recovers.</span></span></label>
+          </div>
+        </div>
+        <ModalFoot>
+          <span className="mr-auto text-[12px] text-ink3">Logged to the incident timeline</span>
+          <Button variant="secondary" onClick={() => setModal(false)}>Cancel</Button>
+          <Button onClick={() => { setModal(false); toast("Incident acknowledged, paging paused"); }}>Acknowledge</Button>
+        </ModalFoot>
+      </Modal>
+      <Modal open={monitorModal} onClose={() => setMonitorModal(false)} label="New monitor">
+        <ModalHead icon="add-01" iconBg="var(--color-winebg)" title="New monitor" sub="Vigil checks it every 30 seconds from three regions." onClose={() => setMonitorModal(false)} />
+        <div className="flex flex-col gap-[14px] px-[18px] py-[16px]">
+          <Field label="URL"><Input placeholder="https://api.yoursite.com/health" /></Field>
+          <Field label="Alert after"><Select><option>3 consecutive failures</option><option>First failure</option><option>5 consecutive failures</option></Select></Field>
+        </div>
+        <ModalFoot>
+          <Button variant="secondary" onClick={() => setMonitorModal(false)}>Cancel</Button>
+          <Button onClick={() => { setMonitorModal(false); toast("Monitor created"); }}>Create monitor</Button>
+        </ModalFoot>
+      </Modal>
+  </>);
+}
 
-      {/* ================= 10 CHARTS ================= */}
-      <Sec id="charts" num="10" title="Charts" lede="Hand-drawn SVG: stacked bars, sparklines and donut. Flat fills, rounded caps, no grid spaghetti.">
+export function ChartsSec() {
+  const toast = useToast();
+  const [chartRange, setChartRange] = useState("Monthly");
+  return (<>
+      <Sec id="charts" num="10" title="Charts" lede="Hand-drawn SVG: stacked bars, sparklines and donut. Flat fills, rounded caps, no grid spaghetti." prompt={"Design lightweight SVG charts in one merlot accent: a stacked bar chart with grid lines, legend and range toggle, a smooth sparkline, and a donut with center total."}>
         <div className="grid gap-[14px] lg:grid-cols-2">
           <Card>
             <CardHead><h3 className="text-[13.5px] font-semibold">Requests by status</h3><span className="flex-1" /><Seg small options={["Weekly", "Monthly"]} value={chartRange} onChange={setChartRange} /></CardHead>
@@ -341,9 +389,13 @@ import { Icon } from "@/components/icons";
           </div>
         </div>
       </Sec>
+  </>);
+}
 
-      {/* ================= 11 FEEDBACK ================= */}
-      <Sec id="feedback" num="11" title="Feedback & states" lede="Alerts, skeletons and empty states that say what happened and what to do next.">
+export function FeedbackSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="feedback" num="11" title="Feedback & states" lede="Alerts, skeletons and empty states that say what happened and what to do next." prompt={"Design feedback states: inline alert banners with icon and action, a friendly empty state with illustration and call to action, skeleton loading rows, and a progress meter."}>
         <Stage col>
           <Alert kind="success" title="Monitor recovered.">checkout.fernwood.dev is responding in 96 ms.</Alert>
           <Alert kind="warn" title="Error budget 65% consumed.">Deploys pause automatically at 80%.</Alert>
@@ -361,23 +413,13 @@ import { Icon } from "@/components/icons";
           </CardBody></Card>
         </div>
       </Sec>
+  </>);
+}
 
-      {/* ================= 12 ICONS ================= */}
-      <Sec id="icons" num="12" title="Icons" lede="Every glyph comes from the free Hugeicons set: stroke rounded, 1.5px on a 24 grid, currentColor. MIT licensed, so the library stays fully open. Click any icon to copy its usage snippet.">
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-[8px]">
-          {iconNames.slice(0, 48).map(n => (
-            <button key={n} onClick={() => { navigator.clipboard?.writeText(`<Icon name="${n}" />`); toast(`Copied: <Icon name="${n}" />`); }}
-              className="flex flex-col items-center gap-[9px] rounded-[12px] border border-line bg-surface px-[6px] pb-[13px] pt-[16px] transition-all hover:-translate-y-[2px] hover:border-wineline hover:shadow-[0_10px_22px_-14px_rgba(114,46,63,.35)]">
-              <Icon name={n} className="h-[22px] w-[22px]" />
-              <span className="font-mono text-[10.5px] text-ink3">{n}</span>
-            </button>
-          ))}
-        </div>
-        <p className="mt-[14px] text-[12.5px] text-ink3">80 icons ship as React components in <span className="font-mono">components/icons.tsx</span> and as SVG files in <span className="font-mono">public/icons/</span> with the Hugeicons MIT notice. Browse the full free set at <a href="https://hugeicons.com" className="underline">hugeicons.com</a>.</p>
-      </Sec>
-
-      {/* ================= 13 PAGES ================= */}
-      <Sec id="pages" num="13" title="Pages" lede="Full compositions built from the same components. Open one, resize it, break it.">
+export function PagesSec() {
+  const toast = useToast();
+  return (<>
+      <Sec id="pages" num="13" title="Pages" lede="Full compositions built from the same components. Open one, resize it, break it." prompt={"Design three showcase cards that preview full page designs: a monitoring dashboard, a SaaS landing page and a newsletter landing, each with a small wireframe thumbnail, description and hover lift."}>
         <div className="grid gap-[14px] md:grid-cols-3">
           {([
             { href: "/dashboard", icon: "grid-view" as IconName, name: "Vigil dashboard", desc: "Sidebar app shell, stats, charts, table", mock: "dash" },
@@ -411,42 +453,5 @@ import { Icon } from "@/components/icons";
           ))}
         </div>
       </Sec>
-
-      <footer className="mt-[56px] flex flex-wrap justify-between gap-[12px] border-t border-line py-[26px] text-[12.5px] text-ink3">
-        <span>FineLikeWine · open source · icons by <a href="https://hugeicons.com" className="underline">Hugeicons</a> (MIT)</span>
-        <span>Built by <a href="https://github.com/Charannsai" className="underline">Charannsai</a> · Next.js, TypeScript and Tailwind</span>
-      </footer>
-
-      {/* modals */}
-      <Modal open={modal} onClose={() => setModal(false)} label="Acknowledge incident">
-        <ModalHead icon="alert-02" iconBg="var(--color-amberbg)" title="Acknowledge incident" sub="Checkout has failed 3 health checks in a row in eu-west." onClose={() => setModal(false)} />
-        <div className="px-[18px] py-[16px]">
-          {[["Monitor", "checkout.fernwood.dev"], ["Started", "14:02 IST · 6 min ago"]].map(([k, v]) => (
-            <div key={k} className="flex justify-between py-[7px] text-[13px]"><span className="text-ink3">{k}</span><span className="font-medium">{v}</span></div>
-          ))}
-          <div className="mt-[10px] flex flex-col gap-[8px]">
-            <label className="flex cursor-pointer items-start gap-[10px] rounded-[11px] border border-ink bg-surface2 p-[12px]"><input type="radio" name="po" defaultChecked className="mt-[3px]" /><span><span className="block text-[13px] font-medium">Fix is deploying</span><span className="block text-[12px] text-ink3">Auto-resolve when checks pass again.</span></span></label>
-            <label className="flex cursor-pointer items-start gap-[10px] rounded-[11px] border border-line p-[12px]"><input type="radio" name="po" className="mt-[3px]" /><span><span className="block text-[13px] font-medium">Monitoring only</span><span className="block text-[12px] text-ink3">Acknowledge, but keep paging until it recovers.</span></span></label>
-          </div>
-        </div>
-        <ModalFoot>
-          <span className="mr-auto text-[12px] text-ink3">Logged to the incident timeline</span>
-          <Button variant="secondary" onClick={() => setModal(false)}>Cancel</Button>
-          <Button onClick={() => { setModal(false); toast("Incident acknowledged, paging paused"); }}>Acknowledge</Button>
-        </ModalFoot>
-      </Modal>
-
-      <Modal open={monitorModal} onClose={() => setMonitorModal(false)} label="New monitor">
-        <ModalHead icon="add-01" iconBg="var(--color-winebg)" title="New monitor" sub="Vigil checks it every 30 seconds from three regions." onClose={() => setMonitorModal(false)} />
-        <div className="flex flex-col gap-[14px] px-[18px] py-[16px]">
-          <Field label="URL"><Input placeholder="https://api.yoursite.com/health" /></Field>
-          <Field label="Alert after"><Select><option>3 consecutive failures</option><option>First failure</option><option>5 consecutive failures</option></Select></Field>
-        </div>
-        <ModalFoot>
-          <Button variant="secondary" onClick={() => setMonitorModal(false)}>Cancel</Button>
-          <Button onClick={() => { setMonitorModal(false); toast("Monitor created"); }}>Create monitor</Button>
-        </ModalFoot>
-      </Modal>
-    </Shell>
-  );
+  </>);
 }
