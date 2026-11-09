@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FineLikeWine
 
-## Getting Started
+An open-source library of fine, simple, modern UI components, pages and landing designs. Warm neutrals, fine borders, tight spacing.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Next.js (App Router), TypeScript and Tailwind CSS. No component runtime dependencies.
+
+## Structure
+
+```
+app/                      routes
+  page.tsx                library showcase (all 13 sections)
+  dashboard/              Vigil dashboard demo
+  landing/meridian/       SaaS landing design
+  landing/fieldnotes/     newsletter landing design
+components/
+  ui.tsx                  the component library (client components)
+  icons.tsx               80 Hugeicons as React components
+  chrome.tsx              sidebar, topbar, command palette shell
+public/
+  brand/                  tile logo (SVG light/dark, PNG favicon/touch)
+  icons/                  icon SVG files + Hugeicons MIT notice
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Develop
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Icons
 
-## Learn More
+All icons come from the free [Hugeicons](https://hugeicons.com) set: stroke rounded, 1.5px on a 24px grid, currentColor. MIT licensed; the notice ships in `public/icons/LICENSE.md`.
 
-To learn more about Next.js, take a look at the following resources:
+## Brand
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The tile logo lives in `public/brand/`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+License to be chosen by the author before the first release.

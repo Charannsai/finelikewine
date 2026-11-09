@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-paper: #f6f5f2;
+  --color-surface: #ffffff;
+  --color-surface2: #faf9f7;
+  --color-ink: #1b1917;
+  --color-ink2: #514c46;
+  --color-ink3: #8a857c;
+  --color-line: #e7e4de;
+  --color-line2: #d8d3ca;
+  --color-wine: #722e3f;
+  --color-winedeep: #5a2432;
+  --color-winebg: #f7edf0;
+  --color-wineline: #e9d3da;
+  --color-green: #3f7d4e;
+  --color-greenbg: #e8f4ea;
+  --color-amber: #b07917;
+  --color-amberbg: #faf0dc;
+  --color-red: #c04545;
+  --color-redbg: #fbeaea;
+  --color-blue: #4a6fc4;
+  --color-bluebg: #e9effc;
+  --color-violet: #7b5ea7;
+  --color-violetbg: #f1ecfa;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument), Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html { scroll-behavior: smooth; }
+body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); font-size: 14px; -webkit-font-smoothing: antialiased; }
+
+@keyframes flw-float { 0%,100% { transform: translateY(0) rotate(var(--r,0deg)); } 50% { transform: translateY(-9px) rotate(var(--r,0deg)); } }
+.float-card { animation: flw-float 7s ease-in-out infinite; }
+@keyframes flw-toast-in { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes flw-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes flw-modal-in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes flw-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.skel { border-radius: 6px; background: linear-gradient(90deg,#edebe6 25%,#f5f3ef 50%,#edebe6 75%); background-size: 400% 100%; animation: flw-shimmer 1.4s infinite linear; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .float-card, .skel { animation: none; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+::selection { background: var(--color-winebg); }
