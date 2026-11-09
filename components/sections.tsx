@@ -10,7 +10,7 @@ export function Sec({ id, num, title, lede, code, prompt, children }: { id: stri
   const copy = (text: string, what: string) => { navigator.clipboard?.writeText(text); toast(what + " copied"); };
   return (
     <section id={id} className="pt-[10px]">
-      <div className="mb-[26px] flex flex-wrap items-end gap-[18px] border-b border-line pb-[16px]">
+      <div className="mb-[26px] flex flex-col items-start gap-[12px] border-b border-line pb-[16px] lg:flex-row lg:items-end lg:gap-[18px]">
         <span className="min-w-[56px] font-display text-[44px] italic leading-none text-wine">{num}</span>
         <div className="min-w-0 flex-1">
           <h2 className="text-[22px] font-semibold tracking-[-0.01em]">{title}</h2>

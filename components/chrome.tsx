@@ -68,7 +68,7 @@ export function Topbar({ crumbs, actions, onMenu }: { crumbs: React.ReactNode; a
         <span className="text-[13px] text-ink3">{crumbs}</span>
         <span className="flex-1" />
         <Button variant="secondary" size="sm" onClick={() => setCmdk(true)}><Icon name="search-01" className="h-[14px] w-[14px]" />Search<Kbd>⌘K</Kbd></Button>
-        <a href="https://github.com/Charannsai/finelikewine" className={`${"inline-flex items-center gap-[7px] rounded-[9px] bg-ink px-[11px] py-[6px] text-[12.5px] font-medium text-paper hover:bg-[#2c2824]"}`}><Icon name="github" className="h-[14px] w-[14px]" />Star on GitHub</a>
+        <a href="https://github.com/Charannsai/finelikewine" className="hidden items-center gap-[7px] rounded-[9px] bg-ink px-[11px] py-[6px] text-[12.5px] font-medium text-paper hover:bg-[#2c2824] sm:inline-flex"><Icon name="github" className="h-[14px] w-[14px]" />Star on GitHub</a>
       </div>
       <Cmdk open={cmdk} onClose={() => setCmdk(false)} actions={withToast} />
     </>
